@@ -13,6 +13,7 @@
     "build:all": "npm run build:ui && npm run build",
     "prepare:icons": "node scripts/prepare-icons.mjs",
     "dist:linux": "npm run build:all && npm run prepare:icons && electron-builder --linux AppImage",
+    "dist:linux:static": "npm run build:all && npm run prepare:icons && electron-builder --linux dir --publish never",
     "dist:win": "npm run build:all && npm run prepare:icons && node scripts/gen-win-ico.mjs && electron-builder --win nsis",
     "dist:mac": "npm run build:all && npm run prepare:icons && node scripts/gen-mac-icns.mjs && electron-builder --mac dmg"
   },
@@ -52,10 +53,16 @@
     ],
     "linux": {
       "target": [
-        "AppImage"
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ],
       "icon": "build-resources/icon.png",
-      "artifactName": "rhwp-desktop-${version}.${ext}",
+      "artifactName": "rhwp-desktop-${version}-${arch}.${ext}",
       "category": "Office"
     },
     "win": {

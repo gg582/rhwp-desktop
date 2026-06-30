@@ -42,6 +42,11 @@ desktop/release/
 desktop/.webpack/
 desktop/.electron/
 
+# Static/distro packaging outputs
+dist-static/
+slackbuild/dist/
+slackbuild/icon.png
+
 # Upstream rhwp clone (sync script)
 .cache/
 

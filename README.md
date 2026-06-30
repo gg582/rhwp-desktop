@@ -89,3 +89,74 @@ npm run dist:linux
 ```
 
 결과물은 `desktop/release/` 아래에 생성됩니다.
+
+## Linux distro 패키징 및 시스템 설치
+
+프로젝트 루트에서 다음 스크립트들을 사용할 수 있습니다. Electron 런타임과 모든
+애플리케이션 자산이 함께 묶여 있어 대상 시스템에 Node.js나 빌드 도구가 필요하지
+않습니다. 기본적으로 호스트 아키텍처(x64/arm64)로 빌드되며, `ARCH=x64` 또는
+`ARCH=arm64`로 대상 아키텍처를 지정할 수 있습니다.
+
+### Static build wrapper
+
+```bash
+./scripts/build-static.sh              # 호스트 아키텍처
+ARCH=arm64 ./scripts/build-static.sh   # arm64로 크로스 빌드
+```
+
+`dist-static/rhwp-desktop-<version>-linux-<arch>/` 디렉터리와
+`dist-static/rhwp-desktop-<version>-linux-<arch>.tar.gz`를 만듭니다.
+
+### 시스템 전체 설치
+
+```bash
+sudo ./install.sh
+# 또는
+sudo ARCH=arm64 ./install.sh
+```
+
+`/opt/rhwp-desktop`에 설치하고 `/usr/bin/rhwp-desktop` 심볼릭 링크, 데스크톱
+엔트리, 아이콘을 등록합니다.
+
+### Debian/Ubuntu (.deb)
+
+```bash
+# fpm 설치 필요
+sudo apt-get install -y ruby ruby-dev build-essential rpm
+sudo gem install fpm
+
+./scripts/build-deb.sh
+# ARCH=arm64 ./scripts/build-deb.sh
+```
+
+`dist-static/rhwp-desktop-<version>-linux-<arch>.deb`가 생성됩니다.
+
+### Fedora/RHEL (.rpm)
+
+```bash
+# fpm 설치 필요
+sudo dnf install -y ruby ruby-devel gcc make rpm-build
+sudo gem install fpm
+
+./scripts/build-rpm.sh
+# ARCH=arm64 ./scripts/build-rpm.sh
+```
+
+`dist-static/rhwp-desktop-<version>-linux-<arch>.rpm`가 생성됩니다.
+
+### Slackware (SlackBuild)
+
+```bash
+./scripts/prepare-slackbuild.sh
+```
+
+`slackbuild/dist/rhwp-desktop-slackbuild-<version>-<slackware-arch>.tar.gz`를
+만듭니다(x86_64, aarch64). 이 tarball은 SlackBuild 스크립트, `.info`, `.desktop`,
+아이콘을 포함하며 GitHub Release에 함께 업로드됩니다. Slackware 사용자는 자신의
+아키텍처에 맞는 tarball을 풀고 `./rhwp-desktop.SlackBuild`를 실행하면 됩니다.
+
+### GitHub Actions 자동 배포
+
+`.github/workflows/release-desktop.yml`이 태그 푸시 시 자동으로 x64/arm64
+AppImage, static tarball, `.deb`, `.rpm`, SlackBuild tarball을 빌드하여 GitHub
+Release에 첨부합니다.

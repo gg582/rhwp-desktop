@@ -1,0 +1,8 @@
+PRGNAM="rhwp-desktop"
+VERSION="1.1.0"
+HOMEPAGE="https://github.com/edwardkim/rhwp-desktop"
+DOWNLOAD="https://github.com/edwardkim/rhwp-desktop/releases/download/v1.1.0/rhwp-desktop-1.1.0-linux-arm64.tar.gz"
+MD5SUM="b64e0dacc5be3c4dfe32e838140adb50"
+REQUIRES=""
+MAINTAINER="Runable.app"
+EMAIL="support@runable.app"

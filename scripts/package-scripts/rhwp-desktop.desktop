@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=rhwp-desktop
+Name[ko]=rhwp-desktop
+Comment=HWP/HWPX document editor
+Comment[ko]=HWP/HWPX 문서 편집기
+Exec=/usr/bin/rhwp-desktop %F
+Icon=rhwp-desktop
+Type=Application
+Categories=Office;WordProcessor;
+MimeType=application/x-hwp;application/x-hwpx;application/haansofthwp;
+Terminal=false
+StartupNotify=true
+StartupWMClass=rhwp-desktop

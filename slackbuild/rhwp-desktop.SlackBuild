@@ -1,0 +1,88 @@
+#!/bin/sh
+# SlackBuild for rhwp-desktop
+#
+# This packages the upstream static Linux build as a Slackware package.
+# The source tarball contains a self-contained Electron bundle.
+
+PRGNAM=rhwp-desktop
+VERSION=${VERSION:-1.1.0}
+BUILD=${BUILD:-1}
+TAG=${TAG:-_runable}
+ARCH=${ARCH:-$(uname -m)}
+
+# Map Slackware-style ARCH to the upstream tarball naming.
+case "$ARCH" in
+  x86_64)
+    ELECTRON_ARCH="x64"
+    ;;
+  aarch64)
+    ELECTRON_ARCH="arm64"
+    ;;
+  *)
+    echo "Unsupported ARCH: $ARCH" >&2
+    echo "Supported: x86_64, aarch64" >&2
+    exit 1
+    ;;
+esac
+
+CWD=$(pwd)
+TMP=${TMP:-/tmp}
+PKG=$TMP/package-$PRGNAM
+OUTPUT=${OUTPUT:-/tmp}
+
+TARBALL="${PRGNAM}-${VERSION}-linux-${ELECTRON_ARCH}.tar.gz"
+DOWNLOAD="https://github.com/edwardkim/rhwp-desktop/releases/download/v${VERSION}/${TARBALL}"
+
+set -e
+
+rm -rf $PKG
+mkdir -p $TMP $PKG/opt $PKG/usr/bin $OUTPUT
+
+# Download the source tarball if it is not already present.
+if [ ! -f "$CWD/$TARBALL" ]; then
+  if [ ! -f "$CWD/${PRGNAM}.info" ]; then
+    echo "Cannot find $TARBALL or ${PRGNAM}.info" >&2
+    exit 1
+  fi
+  echo "Downloading $TARBALL..."
+  wget -q --show-progress "$DOWNLOAD" -O "$CWD/$TARBALL" || {
+    echo "Download failed: $DOWNLOAD" >&2
+    exit 1
+  }
+fi
+
+# Optional MD5SUM verification (skip when placeholder).
+if [ -f "$CWD/${PRGNAM}.info" ]; then
+  EXPECTED=$(grep '^MD5SUM=' "$CWD/${PRGNAM}.info" | cut -d'"' -f2)
+  if [ -n "$EXPECTED" ] && [ "$EXPECTED" != "PLACEHOLDER" ]; then
+    echo "Verifying MD5SUM..."
+    echo "$EXPECTED  $CWD/$TARBALL" | md5sum -c - || exit 1
+  fi
+fi
+
+cd $PKG/opt
+tar -xvf "$CWD/$TARBALL"
+mv "${PRGNAM}-${VERSION}-linux-${ELECTRON_ARCH}" "$PRGNAM"
+
+# SUID sandbox helper (optional; sandbox is disabled by default).
+chmod 4755 "$PKG/opt/$PRGNAM/chrome-sandbox" 2>/dev/null || true
+
+# Launcher symlink.
+ln -s "/opt/$PRGNAM/rhwp-desktop" "$PKG/usr/bin/$PRGNAM"
+
+# Desktop entry and icon.
+mkdir -p $PKG/usr/share/applications
+mkdir -p $PKG/usr/share/icons/hicolor/256x256/apps
+cp "$CWD/$PRGNAM.desktop" "$PKG/usr/share/applications/$PRGNAM.desktop"
+if [ ! -f "$CWD/icon.png" ]; then
+  # Running directly from the repository; copy the canonical build resource.
+  cp "${CWD}/../desktop/build-resources/icon.png" "$CWD/icon.png"
+fi
+cp "$CWD/icon.png" "$PKG/usr/share/icons/hicolor/256x256/apps/$PRGNAM.png"
+
+# Package metadata.
+mkdir -p $PKG/install
+cp "$CWD/slack-desc" $PKG/install/slack-desc
+
+cd $PKG
+/sbin/makepkg -l y -c n "$OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-tgz}"

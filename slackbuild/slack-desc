@@ -1,0 +1,17 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# The leading "#" are required.
+#
+#        |----------------------------------------------------|
+rhwp-desktop: rhwp-desktop (HWP/HWPX document editor)
+rhwp-desktop:
+rhwp-desktop: A standalone desktop editor for HWP/HWPX documents, built on the
+rhwp-desktop: rhwp WASM core and rhwp-studio UI, packaged with Electron.
+rhwp-desktop:
+rhwp-desktop: This package bundles the Electron runtime and all application
+rhwp-desktop: assets so it does not depend on a system Node.js installation.
+rhwp-desktop:
+rhwp-desktop: Homepage: https://github.com/edwardkim/rhwp-desktop
+rhwp-desktop:
+rhwp-desktop:
+rhwp-desktop:
